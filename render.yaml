@@ -1,0 +1,25 @@
+services:
+  # A Docker web service
+  - type: web
+    name: langinfra
+    runtime: docker
+    dockerfilePath: ./docker/render.Dockerfile
+    repo: https://github.com/langinfra/langinfra
+    branch: main
+    plan: standard
+    healthCheckPath: /health_check
+    autoDeploy: false
+    envVars:
+      - key: LANGINFRA_DATABASE_URL
+        value: sqlite:////app/data/.cache/langinfra/langinfra.db
+      - key: LANGINFRA_HOST
+        value: 0.0.0.0
+      - key: LANGINFRA_PORT
+        # default render port https://docs.render.com/web-services#port-binding
+        value: 10000
+      - key: LANGINFRA_LOG_LEVEL
+        value: INFO
+    disk:
+      name: langinfra-data
+      mountPath: /app/data
+

@@ -1,0 +1,42 @@
+networks:
+  dev-langinfra:
+
+services:
+  langinfra:
+    build:
+      context: ..
+      dockerfile: docker/dev.Dockerfile
+    image: dev-langinfra
+    container_name: dev-langinfra
+    restart: always
+    ports:
+      - "7860:7860"
+      - "3000:3000"
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - LANGINFRA_DATABASE_URL=postgresql://langinfra:langinfra@postgres:5432/langinfra
+      - LANGINFRA_SUPERUSER=langinfra
+      - LANGINFRA_SUPERUSER_PASSWORD=langinfra
+      - LANGINFRA_CONFIG_DIR=/var/lib/langinfra
+    env_file:
+      - ../.env
+    volumes:
+      - ../:/app
+    depends_on:
+      - postgres
+    networks:
+      -  dev-langinfra
+
+
+  postgres:
+    container_name: postgres
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: langinfra
+      POSTGRES_PASSWORD: langinfra
+      POSTGRES_DB: langinfra
+    ports:
+      - "5432:5432"
+    networks:
+      -  dev-langinfra
+
